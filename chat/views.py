@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 
+import time
+
 import requests
 import json
 import os
@@ -46,23 +48,41 @@ def get_completion(prompt):
 
 
 def query_view(request):
-    print("starting")
-
-    #if request.method == 'GET':
-        #prompt = "Какие самые интересные достопримечатальности?"
-        #try:
-            #place = request.GET['prompt_place']
-
-        #except:
-            #place = "города Золотого кольца центральной части России"
-        #print(place)
-        ##response = get_completion(prompt, place)
-        #return JsonResponse({'response': response})
+    print("starting not testing")
+    try:
+        #if request.method == 'GET':
+            #prompt = "Какие самые интересные достопримечатальности?"
+            #try:
+                #place = request.GET['prompt_place']
     
-    place = "города Золотого кольца центральной части России"
-    
-    if request.method == 'POST': 
-        prompt = request.POST.get('prompt')
-        response = get_completion(prompt)  # , place)
-        return JsonResponse({'response': response}) 
-    return render(request, 'index.html') 
+            #except:
+                #place = "города Золотого кольца центральной части России"
+            #print(place)
+            ##response = get_completion(prompt, place)
+            #return JsonResponse({'response': response})
+        
+        place = "города Золотого кольца центральной части России"
+        
+        if request.method == 'POST': 
+            prompt = request.POST.get('prompt')
+            response = "WRONG"
+            #response = get_completion(prompt)  # , place)
+            return JsonResponse({'response': response}) 
+        return render(request, 'index.html')
+    except Exception as err:
+        print("error")
+        print(err.args)
+
+
+def test_view(request):
+    try:
+        if request.method == 'POST':
+            prompt_test = request.POST.get('prompt_test_input_to_backend')
+            text = f"I've got: {prompt_test}"
+            print(text)
+            response_test = text
+            time.sleep(5)
+            return JsonResponse({'response_test_from_backend': response_test})
+    except Exception as err:
+        print(err.args)
+    return render(request, 'test.html')
