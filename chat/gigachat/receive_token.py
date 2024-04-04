@@ -4,13 +4,17 @@ import json
 import os
 
 url = "https://ngw.devices.sberbank.ru:9443/api/v2/oauth"
- 
+
+with open('token_init.txt', 'r') as f:
+    token_init = f.read().rstrip()
+    
+    
 payload='scope=GIGACHAT_API_PERS'
 headers = {
   'Content-Type': 'application/x-www-form-urlencoded',
   'Accept': 'application/json',
   'RqUID': str(uuid.uuid4()),
-  'Authorization': 'Basic M2JiMTRlODgtZmM3OS00NDVmLThkZWQtODhlYWUzNzI5M2ViOjhmMGRhZjQ5LTBhNGItNDBiMy04YmI0LThmMzJlODhlYzk3Nw=='
+  'Authorization': f'Basic {token_init}'
 }
 
 response = requests.request("POST", url, headers=headers, data=payload, verify='ca.cer')
