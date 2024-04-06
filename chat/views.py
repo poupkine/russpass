@@ -51,9 +51,16 @@ def chat_view(request):
     print("starting not testing 1")
     try:
         if request.method == 'POST':
-            prompt = request.POST.get('prompt')
+            from_frontend = request.POST.get('to_django')
+            from_frontend = dict(json.loads(from_frontend))
+            print(from_frontend)
+            print(type(from_frontend))
+            prompt = from_frontend['prompt']
+            print(prompt)
+            #csrftoken = request.POST.get('csrftoken')
             response = get_completion(prompt)  # , place)
-            print(12)
+            print(prompt)
+            time.sleep(5)
             print(response)
             return JsonResponse({'response': response})
         return render(request, 'chat.html')
@@ -65,11 +72,13 @@ def chat_view(request):
 
 
 def index_view(request):
+
     try:
         if request.method == 'POST':
             prompt = request.POST.get('prompt')
             text = f"I've got: {prompt}"
             print(text)
+            print("index")
             response = text
             return JsonResponse({'response_test_from_backend': response})
     except Exception as err:

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'chat.apps.ChatConfig',
     'game.apps.GameConfig',
     'kviz.apps.KvizConfig',
+    'map.apps.MapConfig',
 ]
 
 MIDDLEWARE = [
