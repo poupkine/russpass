@@ -114,7 +114,7 @@ def game_view(request):
             return JsonResponse({'response_test_from_backend': response_test})
     except Exception as err:
         print(err.args)
-    return render(request, 'game.html')
+    return render(request, 'game_1.html')
 
 
 
