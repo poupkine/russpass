@@ -1,6 +1,10 @@
 from django.shortcuts import render, HttpResponse
 from django.http import JsonResponse
 
+
+import uuid
+
+
 import time
 import csv
 
@@ -10,6 +14,39 @@ import os
 
 #import openai
 #openai.api_key = 'YOUR_API_KEY'
+
+def receive_token():
+    url = "https://ngw.devices.sberbank.ru:9443/api/v2/oauth"
+    
+    with open('token_init.txt', 'r') as f:
+        token_init = f.read().rstrip()
+        
+        
+    payload='scope=GIGACHAT_API_PERS'
+    headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Accept': 'application/json',
+      'RqUID': str(uuid.uuid4()),
+      'Authorization': f'Basic {token_init}'
+    }
+    
+    response = requests.request("POST", url, headers=headers, data=payload, verify='ca.cer')
+    
+    print(response.text)
+    new_token = dict(json.loads(response.text))["access_token"]
+    print(new_token)
+    
+    
+    parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    
+    filename = 'token.txt'
+    
+    
+    full_path = os.path.join(parent_dir, filename)
+    with open(full_path, 'w') as f:
+        f.writelines(new_token)    
+
+
 csrf_dict = {}
 
 prompt_vladimir = 'Владимир — один из древнейших городов России, история которого насчитывает более 1000 лет. Расположенный на реке Клязьма в 180 км от Москвы, Владимир был основан в конце 10 века и являлся одним из центров Древней Руси, а ныне — это административный центр Владимирской области. Владимир был одним из центров древнерусского зодчества, и в городе сохранились многочисленные старинные достопримечательности, самые известные из которых – Успенский собор, Дмитриевский собор и Золотые ворота. Отели: Гостиница Владимир, АМАКС Золотое Кольцо, Гостиница Застава, Ильинка-отель, Орион Отель. Интересные факты: В течение нескольких веков Владимир был сначала фактической, а затем номинальной столицей Руси. Во Владимире сохранилось три памятника архитектуры, построенных до монголо-татарского завоевания: Золотые ворота, Успенский и Дмитриевский соборы. Раньше ворот в городе было 8, но до наших дней сохранились лишь одни из них.'
@@ -29,7 +66,7 @@ prompt_ivanovo = 'Иваново не зря привлекает несколь
 
 def get_completion(prompt):
     url = "https://gigachat.devices.sberbank.ru/api/v1/chat/completions"
-    role = f"ты - профессиональный туристический робот-планировщик путешествий для туриста. Сначала ты должен спросить о городе, который пользователь хочет посетить. Далее ты предлагаешь самые популярные туристические места для туристов, которые хотят посетить {prompt}, а также рассказываешь о самых интересных местах в этом городе. Расскажи об этом в 3-4 красочных предложениях. Далее дай ссылку на russpass.ru, и спроси пользователя все ли вам понравилось. Не повторяй слова"
+    role = f"ты - профессиональный туристический робот-планировщик путешествий для туриста.Ты рассказиваешь только о городах Российской Федерации. Сначала ты должен спросить о городе, который пользователь хочет посетить. Далее ты предлагаешь самые популярные туристические места для туристов, которые хотят посетить {prompt}, а также рассказываешь о самых интересных местах в этом городе. Расскажи об этом в 3-4 красочных предложениях. Далее дай ссылку на russpass.ru, и спроси пользователя все ли вам понравилось. Не повторяй слова"
     with open('token.txt', 'r') as f:
         token = f.read().rstrip()
         payload = json.dumps({
@@ -66,6 +103,8 @@ def get_completion(prompt):
 
 def chat_view(request):
     print("starting not testing")
+    receive_token()
+    
     try:
         # if request.method == 'GET':
             #prompt = "Какие самые интересные достопримечатальности?"
@@ -194,7 +233,7 @@ def game_view(request):
             return JsonResponse({'response_test_from_backend': response_test})
     except Exception as err:
         print(err.args)
-    return render(request, 'game_1.html')
+    return  render(request, 'game.html')# HttpResponse('<h1> Please see game in presentation ))</h1>')
 
 
 
